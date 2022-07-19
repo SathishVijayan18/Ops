@@ -1,0 +1,80 @@
+package com.ops;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+public class MainClass extends Thread{
+
+	public static void main(String[] args) throws IOException {
+		//FileCreationThread thread1=new FileCreationThread();
+		final Logger log=Logger.getLogger(MainClass.class.getName());
+		String data="";
+		char arr[]=new char[2000];
+		final boolean append=true;
+		FileReader fr=new FileReader("D:\\files\\demo.txt");
+		BufferedReader input = new BufferedReader(fr);
+		input.read(arr);
+		data=new String(arr);
+		input.close();
+		Timer timer=new Timer();
+		TimerTask task1=new TimerTask() {
+
+			@Override
+			public void run() {
+				long currentTime=System.currentTimeMillis();
+				long timeMillis=(currentTime-(currentTime%(4*1000)));
+				String ConvertedTime=Long.toString(timeMillis);
+				String fileName="RGF_"+ConvertedTime+".cxmsg";
+				System.out.println("currentMillis : "+currentTime);
+				System.out.println(timeMillis);
+				File f=new File("D:\\files\\"+fileName);
+				try {
+					if(f.createNewFile()) {
+						System.out.println("created file : "+fileName);
+						try {
+							FileHandler handler= new FileHandler("D:\\files\\"+fileName,append);
+							log.addHandler(handler);
+							SimpleFormatter formatter = new SimpleFormatter();
+							handler.setFormatter(formatter);
+							for(int i=0;i<-1;i++) {
+								log.info(data);
+								Thread.sleep(3000);
+							}handler.close();
+						}catch(Exception e) {
+							e.printStackTrace();
+						}
+						
+					}else {
+						System.out.println("File already exists");
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		};
+		Calendar date=Calendar.getInstance();
+		date.set(Calendar.YEAR, 2022);
+		date.set(Calendar.MONTH,Calendar.JULY);
+		date.set(Calendar.DAY_OF_MONTH,19);
+		date.set(Calendar.HOUR_OF_DAY, 14);
+		date.set(Calendar.MINUTE,55);
+		date.set(Calendar.SECOND,0);
+		date.set(Calendar.MILLISECOND, 0);
+		//timer.schedule(task1,2000);
+		//timer.schedule(task1, date.getTime());
+		timer.schedule(task1,0,60000);
+		//timer.schedule(task1, date.getTime(),1000);
+	}
+
+}
